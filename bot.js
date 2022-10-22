@@ -13,8 +13,8 @@ const Bot = new Client({
 })
 
 // Settings
-const Token = 'ODMyNjIxNDE3OTcxMzE4ODU2.GmyGFO.udcDGu3ylRhxWLUOmKH-BBVsDjwMfe_DGH3EEM'
-const Id = '832621417971318856'
+const Token = ''
+const Id = ''
 
 // For us to look submit commands to the but using REST
 Bot["token"] = Token
