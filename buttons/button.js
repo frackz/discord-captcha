@@ -80,6 +80,15 @@ module.exports = {
 			);
         
 
-        return interaction.reply({content: "Spell out the numbers on this image.", files: [attachment], components: [row], ephemeral: true})
+        return interaction.reply({embeds: [
+            {
+                "title": "Please solve the captcha",
+                "description": "Welcome, this is the captcha page - there is an image below this message. You just have to insert the numbers that are in the picture.\n\nIf you fail 3 times, you will be banned for 3 hours for captcha.\n\nSo think about it, and if we find out you are using bot accounts you will be banned.",
+                "color": 3321331,
+                "image": {
+                  "url": "attachment://captcha.png"
+                }
+            }
+        ], files: [attachment], components: [row], ephemeral: true})
     }
 }
