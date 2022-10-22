@@ -1,2 +1,2 @@
 # discord-captcha
-Discord Captcha, still in needs work
+Discord Captcha, still in needs of work
