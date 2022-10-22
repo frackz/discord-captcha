@@ -32,32 +32,17 @@ module.exports = {
             if (cmd.code.length == 1) {
                 codes[guild][user] = null // removes the user from captcha list 
 
-                const ggg = db.prepare('SELECT * FROM `guilds` WHERE `guild` = ?').get(
-                    guild
-                )
+                const ggg = db.prepare('SELECT * FROM `guilds` WHERE `guild` = ?').get(guild)
 
-                if (ggg == null) {
-                    return interaction.reply({content: "Oops! We are sorry - the server owner didn't setup the roles yet, please contact the server owner to get this fixed!", ephemeral: true})
-                }
+                if (ggg == null) {return interaction.reply({content: "Oops! We are sorry - the server owner didn't setup the roles yet, please contact the server owner to get this fixed!", ephemeral: true})}
 
                 let role = interaction.guild.roles.cache.find(r => r.id === ggg.role);
-                if (role == null) {
-                    return interaction.reply({content: "Oops! We cannot find the captcha role!", ephemeral: true})
-                }
+                if (role == null) {return interaction.reply({content: "Oops! We cannot find the captcha role!", ephemeral: true})}
 
-                interaction.member.roles.add(role).catch(() => {
-                    return interaction.reply({content: "We dont have permissions to give you the role!", ephemeral: true})
-                }).then(() => {
+                interaction.member.roles.add(role).catch(() => {return interaction.reply({content: "We dont have permissions to give you the role!", ephemeral: true})})
+                .then(() => {
                     db.prepare('INSERT INTO `saves` (`user`, `guild`) VALUES (?,?)').run(user, guild)
-                    try {
-                        return interaction.update({embeds:[
-                            {
-                                "title": "Success, you are good!",
-                                "description": "Luckily (we hope) you're not a robot. If you are, stop :(\n\nYou have now been given the role that an administrator has told us to give you.",
-                                "color": 2420780
-                            }
-                        ],files:[],components:[]})
-                    } catch {console.log("LOL")}
+                    try {return interaction.update({embeds:[{"title": "Success, you are good!","description": "Luckily (we hope) you're not a robot. If you are, stop :(\n\nYou have now been given the role that an administrator has told us to give you.", "color": 2420780}],files:[],components:[]})} catch {}
                 })
 
 
