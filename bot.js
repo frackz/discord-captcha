@@ -52,7 +52,11 @@ const Handler = {
 // Starters
 require('./data/handler').start()
 
-require('./data/handler').get().exec('CREATE TABLE IF NOT EXISTS `blacklists` (`user` varchar(255) NOT NULL, `date` varchar(255) NOT NULL)')
+const g = require('./data/handler').get()
+
+g.exec('CREATE TABLE IF NOT EXISTS `blacklists` (`user` varchar(255) NOT NULL, `date` varchar(255) NOT NULL)')
+g.exec('CREATE TABLE IF NOT EXISTS `saves` (`user` varchar(255) NOT NULL, `guild` varchar(255) NOT NULL)')
+g.exec('CREATE TABLE IF NOT EXISTS `guilds` (`guild` varchar(255) NOT NULL, `role` varchar(255) NOT NULL)')
 Handler.look(Handler.file, Handler.look, Handler.load)
 
 Bot.login(Token)

@@ -40,45 +40,34 @@ const canvas = {
 
 module.exports = {
     button: {
-        id: 'solve', // Needs to be this ID
-        contains: false // Allow if the button's id contains this over ^^
+        id: 'solve',
+        contains: false
     },
     getCodes: () => {return codes},
     getCanvas: () => {return canvas},
     execute: async(interaction, bot) => {
         const guild = interaction.guildId
-        const userID = interaction.user.id
+        const user = interaction.user.id
 
-        const check = db.prepare('SELECT * FROM `blacklists` WHERE `user` = ?').get(userID)
+        const check = db.prepare('SELECT * FROM `blacklists` WHERE `user` = ?').get(user)
         if (check != null) {
             if (Date.now() < check["date"]) return interaction.reply({content: "You are currently blacklisted from Captcha - you will be un-blacklisted: "+new Date(parseInt(check["date"])).toLocaleTimeString().replaceAll('.',':'), ephemeral: true})
-            db.prepare('DELETE FROM `blacklists` WHERE `user` = ?').run(userID)
+            db.prepare('DELETE FROM `blacklists` WHERE `user` = ?').run(user) // remove the (now expired) blacklist from the user
         }
 
         var code = null
+
         if (codes[guild] == null) codes[guild] = {}
-        if(codes[guild][userID] == null) {const c = canvas.random(); codes[guild][userID] = {code: c, tries: 3, completed: ''}; code=c} else {code = codes[guild][userID].code}
-        const attachment = await canvas.new(code, '')
-
-
-        const row = new ActionRowBuilder()
-			.addComponents(
-				new SelectMenuBuilder()
-					.setCustomId('solve')
-					.setPlaceholder('Select number!')
-					.addOptions(
-						canvas.option("1"),
-                        canvas.option("2"),
-                        canvas.option("3"),
-                        canvas.option("4"),
-                        canvas.option("5"),
-                        canvas.option("6"),
-                        canvas.option("7"),
-                        canvas.option("8"),
-                        canvas.option("9"),
-					),
-			);
         
+        const save = db.prepare('SELECT * FROM `saves` WHERE `user` = ? AND `guild` = ?').get(user,guild)
+        if (save != null) return interaction.reply({content: "You already completed this captcha!", ephemeral: true})
+
+        if(codes[guild][user] == null) {codes[guild][user] = {code: canvas.random(), tries: 3, completed: ''}; code=codes[guild][user].code} 
+        else {code = codes[guild][user].code}
+        
+        const attachment = await canvas.new(code, '')
+        const row = new ActionRowBuilder().addComponents(new SelectMenuBuilder().setCustomId('solve').setPlaceholder('Select number!').addOptions(canvas.option("1"), canvas.option("2"), canvas.option("3"),canvas.option("4"),canvas.option("5"),canvas.option("6"),canvas.option("7"),canvas.option("8"),canvas.option("9")),);
+
 
         return interaction.reply({embeds: [
             {

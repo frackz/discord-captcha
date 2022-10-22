@@ -1,10 +1,10 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
 const {ActionRowBuilder, ButtonBuilder, ButtonStyle} = require('discord.js')
-const db = require('../data/handler').get()
+const db = require('../data/handler').get() // get db
 
 module.exports = {
     command: {
-        builder: new SlashCommandBuilder() //Insert either SlashCommandBuilder(with .toJSON() at last) or json format
+        builder: new SlashCommandBuilder()
             .setName("setup")
             .setDescription("Setup Captcha")
             .addSubcommand(subcommand =>
@@ -27,9 +27,26 @@ module.exports = {
     executors: {
         subs: {
             "role": (interaction, bot) => {
+                if (interaction.user.id != interaction.guild.ownerId) return interaction.reply({content: "You are not the owner of the server.", ephemeral: true})
+                const role = interaction.options.getRole("role")
                 
+                const data = db.prepare('SELECT * FROM `guilds` WHERE `guild` = ?').get(interaction.guildId)
+                if (data == null) {
+                    db.prepare('INSERT INTO `guilds` (`guild`, `role`) VALUES (?, ?)').run(
+                        interaction.guildId,
+                        role.id
+                    )
+                } else {
+                    db.prepare('UPDATE `guilds` SET `role` = ? WHERE `guild` = ?').run(
+                        role.id,
+                        interaction.guildId
+                    )
+                }
+                return interaction.reply({content: "Updated the captcha role to <@&"+role.id+">", ephemeral: true})
             },
             "message": (interaction, bot) => {
+                if (interaction.user.id != interaction.guild.ownerId) return interaction.reply({content: "You are not the owner of the server.", ephemeral: true})
+
                 const row = new ActionRowBuilder()
                 .addComponents(
                     new ButtonBuilder()
