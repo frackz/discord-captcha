@@ -13,8 +13,8 @@ const Bot = new Client({
 })
 
 // Settings
-const Token = 'ODMyNjIxNDE3OTcxMzE4ODU2.GmyGFO.udcDGu3ylRhxWLUOmKH-BBVsDjwMfe_DGH3EEM'
-const Id = '832621417971318856'
+const Token = ''
+const Id = ''
 
 // For us to look submit commands to the but using REST
 Bot["token"] = Token
@@ -48,6 +48,11 @@ const Handler = {
     }
 }
 
+
+// Starters
+require('./data/handler').start()
+
+require('./data/handler').get().exec('CREATE TABLE IF NOT EXISTS `blacklists` (`user` varchar(255) NOT NULL, `date` varchar(255) NOT NULL)')
 Handler.look(Handler.file, Handler.look, Handler.load)
 
 Bot.login(Token)
